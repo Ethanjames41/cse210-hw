@@ -1,0 +1,110 @@
+@startuml
+title Eternal Quest - Class Diagram
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+class Program {
+  +Main(args: string[]): void
+}
+
+class GoalManager {
+  -_goals: List<Goal>
+  -_score: int
+  +GoalManager()
+  +Start(): void
+  -DisplayPlayerInfo(): void
+  -ListGoalNames(): void
+  -ListGoalDetails(): void
+  -CreateGoal(): void
+  -RecordEvent(): void
+  -SaveGoals(filename: string): void
+  -LoadGoals(filename: string): void
+  -CreateGoalFromData(parts: string[]): Goal
+}
+
+abstract class Goal {
+  -_name: string
+  -_description: string
+  -_points: int
+  +Goal(name: string, description: string, points: int)
+  +GetName(): string
+  +GetDescription(): string
+  +GetPoints(): int
+  +GetDetailsString(): string
+  {abstract} +RecordEvent(): int
+  {abstract} +IsComplete(): bool
+  {abstract} +GetStringRepresentation(): string
+}
+
+class SimpleGoal {
+  -_isComplete: bool
+  +SimpleGoal(name: string, description: string, points: int)
+  +SimpleGoal(name: string, description: string, points: int, isComplete: bool)
+  +RecordEvent(): int
+  +IsComplete(): bool
+  +GetDetailsString(): string
+  +GetStringRepresentation(): string
+}
+
+class EternalGoal {
+  +EternalGoal(name: string, description: string, points: int)
+  +RecordEvent(): int
+  +IsComplete(): bool
+  +GetDetailsString(): string
+  +GetStringRepresentation(): string
+}
+
+class ChecklistGoal {
+  -_targetCount: int
+  -_bonusPoints: int
+  -_amountCompleted: int
+  +ChecklistGoal(name: string, description: string, points: int, targetCount: int, bonusPoints: int)
+  +ChecklistGoal(name: string, description: string, points: int, targetCount: int, bonusPoints: int, amountCompleted: int)
+  +RecordEvent(): int
+  +IsComplete(): bool
+  +GetDetailsString(): string
+  +GetStringRepresentation(): string
+}
+
+Program --> GoalManager : creates and starts
+GoalManager o-- "0..*" Goal : manages
+Goal <|-- SimpleGoal
+Goal <|-- EternalGoal
+Goal <|-- ChecklistGoal
+
+note right of Goal
+Shared behavior and data for every goal:
+- stores common goal information
+- exposes polymorphic methods
+- lets GoalManager work with Goal references
+end note
+
+note right of GoalManager
+Main responsibilities:
+- show menu and current score
+- create the correct goal subtype
+- record events through Goal references
+- save and load goals from a file
+end note
+
+note bottom of ChecklistGoal
+ChecklistGoal awards base points for each completion
+and adds bonus points when the target count is reached.
+end note
+
+legend bottom
+Program Flow
+
+1. Program creates GoalManager and calls Start().
+2. GoalManager shows the score and menu options in a loop.
+3. When the user creates a goal, GoalManager builds the selected subtype
+   (SimpleGoal, EternalGoal, or ChecklistGoal) and stores it in List<Goal>.
+4. When the user records an event, GoalManager calls RecordEvent() on a Goal
+   reference, and the correct overridden method runs through polymorphism.
+5. The derived goal returns earned points, and GoalManager adds them to _score.
+6. Saving uses GetStringRepresentation() for each goal and writes the score to a file.
+7. Loading reads saved data and recreates the proper goal subtype with CreateGoalFromData(...).
+8. The program ends when the user chooses Quit.
+endlegend
+
+@enduml
