@@ -9,7 +9,7 @@ public abstract class Activity
     {
         _name = name;
         _description = description;
-        _random = Random.Shared;
+        _random = new Random();
     }
 
     public string GetName()
@@ -106,7 +106,7 @@ public abstract class Activity
     {
         while (true)
         {
-            string? input = Console.ReadLine();
+            string input = Console.ReadLine();
 
             if (int.TryParse(input, out int duration) && duration > 0)
             {

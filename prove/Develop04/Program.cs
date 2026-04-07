@@ -11,11 +11,6 @@ public class Program
 
     public void Run()
     {
-        // Creativity / exceed requirements:
-        // 1. The program keeps a session log of completed activities and total mindful seconds,
-        //    then shows that running summary on the menu.
-        // 2. Reflection and listing prompts/questions are cycled without repeats until each pool
-        //    has been used once, which makes longer sessions feel less repetitive.
         bool isRunning = true;
 
         while (isRunning)
@@ -30,7 +25,7 @@ public class Program
                 continue;
             }
 
-            Activity? activity = CreateActivity(choice);
+            Activity activity = CreateActivity(choice);
 
             if (activity is null)
             {
@@ -48,15 +43,24 @@ public class Program
         Console.WriteLine("Thank you for using the Mindfulness Program.");
     }
 
-    private Activity? CreateActivity(string choice)
+    private Activity CreateActivity(string choice)
     {
-        return choice switch
+        if (choice == "1")
         {
-            "1" => new BreathingActivity(),
-            "2" => new ReflectingActivity(),
-            "3" => new ListingActivity(),
-            _ => null
-        };
+            return new BreathingActivity();
+        }
+
+        if (choice == "2")
+        {
+            return new ReflectingActivity();
+        }
+
+        if (choice == "3")
+        {
+            return new ListingActivity();
+        }
+
+        return null;
     }
 
     private void DisplayMenu()
